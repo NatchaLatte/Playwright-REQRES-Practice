@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test'
 import Ajv2020  from 'ajv/dist/2020'
 import { listResource, listUsers, singleResource, singleUser } from '../schema/get-api.schema'
-import { createUser, registerSuccessful } from '../schema/post-api.schema'
+import { createUser, registerSuccessful, registerUnSuccessful } from '../schema/post-api.schema'
 
 const ajv = new Ajv2020 ()
 
@@ -136,6 +136,23 @@ test.describe('POST API', () => {
 
     const body = await response.json()
     const validate = ajv.compile(registerSuccessful)
+    expect(validate(body)).toBe(true)
+  })
+  test('REGISTER - UNSUCCESSFUL', async ({ request }) => {
+    const user = {
+      email: "sydney@fife",
+    }
+
+    const response = await request.post('/api/register', { data: user })
+    
+    const stauts = response.status()
+    expect(stauts).toBe(400)
+
+    const headers = response.headers()
+    expect(headers['content-type']).toContain('application/json')
+
+    const body = await response.json()
+    const validate = ajv.compile(registerUnSuccessful)
     expect(validate(body)).toBe(true)
   })
 })
