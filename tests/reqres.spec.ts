@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test'
 import Ajv2020  from 'ajv/dist/2020'
 import { listResource, listUsers, singleResource, singleUser } from '../schema/get-api.schema'
+import { createUser } from '../schema/post-api.schema'
 
 const ajv = new Ajv2020 ()
 
@@ -98,8 +99,27 @@ test.describe('GET API', () => {
   })
 })
 
-test.describe.skip('POST API', () => {
+test.describe('POST API', () => {
+  test('CREATE', async ({ request }) => {
+    const user = {
+      name: "morpheus",
+      job: "leader"
+    }
 
+    const response = await request.post('/api/users', { data: user })
+    
+    const stauts = response.status()
+    expect(stauts).toBe(201)
+
+    const headers = response.headers()
+    expect(headers['content-type']).toContain('application/json')
+
+    const body = await response.json()
+    const validate = ajv.compile(createUser)
+    expect(validate(body)).toBe(true)
+
+    expect(user).toEqual(expect.objectContaining(user))
+  })
 })
 
 test.describe.skip('PUT API', () => {
