@@ -18,6 +18,19 @@ test.describe('GET API', () => {
     const validate =ajv.compile(listUsers)
     expect(validate(body)).toBe(true)
   })
+  test('SINGLE USER', async ({ request }) => {
+    const response = await request.get('/api/users/2')
+    
+    const stauts = response.status()
+    expect(stauts).toBe(200)
+
+    const headers = response.headers()
+    expect(headers['content-type']).toContain('application/json')
+
+    const body = await response.json()
+    const validate =ajv.compile(singleUser)
+    expect(validate(body)).toBe(true)
+  })
 })
 
 test.describe.skip('POST API', () => {
