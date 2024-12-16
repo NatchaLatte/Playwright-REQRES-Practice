@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 import Ajv2020  from 'ajv/dist/2020'
-import { listUsers, singleUser } from '../schema/get-api.schema'
+import { listResource, listUsers, singleUser } from '../schema/get-api.schema'
 
 const ajv = new Ajv2020 ()
 
@@ -15,7 +15,7 @@ test.describe('GET API', () => {
     expect(headers['content-type']).toContain('application/json')
 
     const body = await response.json()
-    const validate =ajv.compile(listUsers)
+    const validate = ajv.compile(listUsers)
     expect(validate(body)).toBe(true)
   })
   test('SINGLE USER', async ({ request }) => {
@@ -28,7 +28,7 @@ test.describe('GET API', () => {
     expect(headers['content-type']).toContain('application/json')
 
     const body = await response.json()
-    const validate =ajv.compile(singleUser)
+    const validate = ajv.compile(singleUser)
     expect(validate(body)).toBe(true)
   })
   test('SINGLE USER NOT FOUND', async ({ request }) => {
@@ -42,6 +42,19 @@ test.describe('GET API', () => {
 
     const body = await response.json()
     expect(body).toEqual({})
+  })
+  test('LIST <RESOURCE>', async ({ request }) => {
+    const response = await request.get('/api/unknown')
+    
+    const stauts = response.status()
+    expect(stauts).toBe(200)
+
+    const headers = response.headers()
+    expect(headers['content-type']).toContain('application/json')
+
+    const body = await response.json()
+    const validate = ajv.compile(listResource)
+    expect(validate(body)).toBe(true)
   })
 })
 
