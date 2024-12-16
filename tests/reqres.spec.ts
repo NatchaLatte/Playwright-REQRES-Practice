@@ -69,6 +69,18 @@ test.describe('GET API', () => {
     const validate = ajv.compile(singleResource)
     expect(validate(body)).toBe(true)
   })
+  test('SINGLE <RESOURCE> NOT FOUND', async ({ request }) => {
+    const response = await request.get('/api/unknown/23')
+    
+    const stauts = response.status()
+    expect(stauts).toBe(404)
+
+    const headers = response.headers()
+    expect(headers['content-type']).toContain('application/json')
+
+    const body = await response.json()
+    expect(body).toEqual({})
+  })
 })
 
 test.describe.skip('POST API', () => {
