@@ -236,6 +236,11 @@ test.describe('PATCH API', () => {
   })
 })
 
-test.describe.skip('DELETE API', () => {
-
+test.describe('DELETE API', () => {
+  test('DELETE', async ({ request }) => {
+    const response = await request.delete('/api/users/2')
+    
+    const stauts = response.status()
+    expect(stauts).toBe(204)
+  })
 })
