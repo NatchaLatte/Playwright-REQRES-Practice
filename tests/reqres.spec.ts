@@ -81,6 +81,21 @@ test.describe('GET API', () => {
     const body = await response.json()
     expect(body).toEqual({})
   })
+  test('DELAYED RESPONSE', async ({ request }) => {
+    test.setTimeout(3_500)
+
+    const response = await request.get('/api/users?delay=3')
+
+    const stauts = response.status()
+    expect(stauts).toBe(200)
+
+    const headers = response.headers()
+    expect(headers['content-type']).toContain('application/json')
+
+    const body = await response.json()
+    const validate = ajv.compile(listUsers)
+    expect(validate(body)).toBe(true)
+  })
 })
 
 test.describe.skip('POST API', () => {
