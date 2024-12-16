@@ -2,6 +2,8 @@ import { test, expect } from '@playwright/test'
 import Ajv2020  from 'ajv/dist/2020'
 import { listResource, listUsers, singleResource, singleUser } from '../schema/get-api.schema'
 import { createUser, loginSuccessful, loginUnSuccessful, registerSuccessful, registerUnSuccessful } from '../schema/post-api.schema'
+import { putUser } from '../schema/put-api.schema'
+import { patchUser } from '../schema/patch-api.schema'
 
 const ajv = new Ajv2020 ()
 
@@ -192,12 +194,46 @@ test.describe('POST API', () => {
   })
 })
 
-test.describe.skip('PUT API', () => {
+test.describe('PUT API', () => {
+  test('UPDATE', async ({ request }) => {
+    const user = {
+      name: "morpheus",
+      job: "zion resident"
+    }
 
+    const response = await request.put('/api/users/2', { data: user })
+    
+    const stauts = response.status()
+    expect(stauts).toBe(200)
+
+    const headers = response.headers()
+    expect(headers['content-type']).toContain('application/json')
+
+    const body = await response.json()
+    const validate = ajv.compile(putUser)
+    expect(validate(body)).toBe(true)
+  })
 })
 
-test.describe.skip('PATCH API', () => {
+test.describe('PATCH API', () => {
+  test('UPDATE', async ({ request }) => {
+    const user = {
+      name: "morpheus",
+      job: "zion resident"
+    }
 
+    const response = await request.patch('/api/users/2', { data: user })
+    
+    const stauts = response.status()
+    expect(stauts).toBe(200)
+
+    const headers = response.headers()
+    expect(headers['content-type']).toContain('application/json')
+
+    const body = await response.json()
+    const validate = ajv.compile(patchUser)
+    expect(validate(body)).toBe(true)
+  })
 })
 
 test.describe.skip('DELETE API', () => {
